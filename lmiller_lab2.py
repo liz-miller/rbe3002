@@ -9,18 +9,12 @@ from kobuki_msgs.msg import BumperEvent
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 
-# These are global variables. Write "global <variable_name>" in any other function
-# to gain access to these global variables
-    
+# Globals
 global pub
 global pose
 global odom_tf
 global odom_list
-
-sub = rospy.Subscriber("/cmd_vel_mux/input/teleop",Twist,read_odometry, queue_size=1) # Callback function to read in robot Odometry messages
-    
-bumper_sub = rospy.Subscriber('...', ..., readBumper, queue_size=1) # Callback function to handle bumper events
-    
+   
 # Use this object to get the robot's Odometryn
     odom_list = tf.TransformListener()
     
@@ -66,12 +60,7 @@ def driveArc(radius, speed, angle):
 
 #Odometry Callback function.
 def read_odometry(msg):
-    # sign that callback works
-    rospy.loginfo("callback recvd")
-    # linear message
-    rospy.loginfo("Linear Components: [%f, %f, %f]"%(msg.linear.x, msg.linear.y, msg.linear.z))
-    # angular message
-    rospy.loginfo("Angular Components: [%f, %f, %f]"%(msg.angular.x, msg.angular.y, msg.angular.z))
+   
     
 #Bumper Event Callback function
 def readBumper(msg):
@@ -88,6 +77,10 @@ def readBumper(msg):
 def timerCallback(event):
     pass # Delete this 'pass' once implemented
 
+
+sub = rospy.Subscriber("/cmd_vel_mux/input/teleop",Twist,read_odometry, queue_size=1) # Callback function to read in robot Odometry messages
+    
+bumper_sub = rospy.Subscriber('...', ..., readBumper, queue_size=1) # Callback function to handle bumper events
 
 # Main Function
 if __name__ == '__main__':
