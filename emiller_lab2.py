@@ -14,6 +14,10 @@ global pub
 global pose
 global odom_tf
 global odom_list
+
+# Turtlebot measurements
+global	b = .25 # linear distance (m) between both wheels on turtlebot
+global	r = .05	# wheel radii (m)
    
 # Use this object to get the robot's Odometryn
     odom_list = tf.TransformListener()
@@ -41,8 +45,10 @@ def executeTrajectory():
 
 #This function accepts two wheel velocities and a time interval.
 def spinWheels(u1, u2, time):
-    pass  # Delete this 'pass' once implemented
-
+	while (current time < total time) # run wheels until set time is reached
+	left_wheel = (r/2)*(u1+u2) # spins left wheel
+	right_wheel = (r/b)*(u1-u2) # spins right wheel
+		
 #This function accepts a speed and a distance for the robot to move in a straight line
 def driveStraight(speed, distance):
    pass  # Delete this 'pass' once implemented
@@ -86,7 +92,8 @@ bumper_sub = rospy.Subscriber('...', ..., readBumper, queue_size=1) # Callback f
 if __name__ == '__main__':
    
     pub = rospy.Publisher("/mobile_base/commands/velocity", Twist) # Publisher for commanding robot motion
-    rospy.init_node('lmiller-lab2')
+
+    rospy.init_node('emiller-lab2')
     
     print "Starting Lab 2"
         
