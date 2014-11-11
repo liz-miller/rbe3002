@@ -1,1 +1,2 @@
 https://code.google.com/p/rosbee/wiki/Turtlebot
+http://wiki.ros.org/navigation/Tutorials/RobotSetup/Odom
