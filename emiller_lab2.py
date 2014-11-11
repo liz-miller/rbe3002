@@ -9,7 +9,7 @@ from kobuki_msgs.msg import BumperEvent
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 
-# Globals
+################## GLOBALS ##################
 global pub
 global pose
 global odom_tf
@@ -19,13 +19,15 @@ global odom_list
 global	b = .25 # linear distance (m) between both wheels on turtlebot
 global	r = .05	# wheel radii (m)
    
-# Use this object to get the robot's Odometryn
+# Use this object to get the robot's Odometry
     odom_list = tf.TransformListener()
     
 # Use this command to make the program wait for some seconds
     rospy.sleep(rospy.Duration(1, 0))
 
-#This function sequentially calls methods to perform a trajectory.
+# executeTrajectory:
+# parameters
+# none
 def executeTrajectory():
     print "drive fwd .60m"
     driveStraight(0.1,0.60)
@@ -43,29 +45,80 @@ def executeTrajectory():
     print "drive fwd .42m"
     driveStraight(0.1,0.42)
 
-#This function accepts two wheel velocities and a time interval.
+# spinWheels:
+# parameters
+# u1 - left wheel velocity
+# u2 - right wheel velocity
+# time - time
 def spinWheels(u1, u2, time):
-	while (current time < total time) # run wheels until set time is reached
-	left_wheel = (r/2)*(u1+u2) # spins left wheel
-	right_wheel = (r/b)*(u1-u2) # spins right wheel
-		
-#This function accepts a speed and a distance for the robot to move in a straight line
+  count = 0
+  while count < time: # run wheels until set time is reached
+   # publish translation to twist
+   twist.linear.x = (r/2)*(u1+u2)
+   twist.linear.y = 0
+   twist.linear.z = 0
+   
+   # publish rotation to twist
+   twist.angular.x = 0
+   twist.angular.y = 0
+   twist.angular.z = (r/b)*(u1-u2)
+
+   # sleep for 1 second
+   rospy.sleep(1)
+
+   # count each iteration
+   count = count + 1
+
+# driveStraight:
+# parameters
+# speed - speed (m/s)
+# distance - distance (m)	
+# This function accepts a speed and a distance for the robot to move in a straight line
 def driveStraight(speed, distance):
-   pass  # Delete this 'pass' once implemented
+   # obtain distance
+   
+   while current_dist < distance:	
+   # publish translation to twist
+   twist.linear.x = (r/2)*(speed+speed)
+   twist.linear.y = 0
+   twist.linear.z = 0
 
-#Accepts an angle and makes the robot rotate around it.
+# rotate:
+# parameters
+# angle - angle (degrees) - converted to radians in body
+# Accepts an angle and makes the robot rotate around it.
 def rotate(angle):
-    angle=angle*radians; # convert to radians
-    pass  # Delete this 'pass' once implemented
+   angle = math.radians(angle) # convert to radians
+   while True:
+   # publish translation to twist
+   twist.linear.x = 0
+   twist.linear.y = 0
+   twist.linear.z = 0
 
+   # publish rotation to twist
+   twist.angular.x = radius + speed*math.cos(angle)
+   twist.angular.y = radius + speed*math.sin(angle)
+   twist.angular.z = angle
+    
+# driveArc:
+# parameters
+# radius - radius (m)
+# speed - speed (m/s)
+# angle - angle (degrees) - converted to radians in body.
 #This function works the same as rotate how ever it does not publish linear velocities.
 def driveArc(radius, speed, angle):
-    pass  # Delete this 'pass' once implemented
+   angle = math.radians(angle) # convert to radians
+   
+# publish rotation to twist
+   twist.angular.x = radius + speed*math.cos(angle)
+   twist.angular.y = radius + speed*math.sin(angle)
+   twist.angular.z = angle
 
 ################## CALLBACK FUNCTIONS ##################
 
 #Odometry Callback function.
 def read_odometry(msg):
+	odom_sub = rospy.Subscriber("/cmd_vel_mux/input/teleop",Twist, read_odometry, queue_size=1) # Callback function to read in robot Odometry messages
    
     
 #Bumper Event Callback function
@@ -75,7 +128,7 @@ def readBumper(msg):
     rospy.loginfo("bumper triggered")
     
     # setup the subscriber
-    rospy.Subscriber("/mobile_base/events/bumper", BumperEvent, readBumper)
+    bumper_sub = rospy.Subscriber("/mobile_base/events/bumper", BumperEvent, readBumper, queue_size=1) # Callback function to handle bumper events
         
 # (Optional) If you need something to happen repeatedly at a fixed interval, write the code here.
 # Start the timer with the following line of code: 
@@ -84,19 +137,18 @@ def timerCallback(event):
     pass # Delete this 'pass' once implemented
 
 
-sub = rospy.Subscriber("/cmd_vel_mux/input/teleop",Twist,read_odometry, queue_size=1) # Callback function to read in robot Odometry messages
-    
-bumper_sub = rospy.Subscriber('...', ..., readBumper, queue_size=1) # Callback function to handle bumper events
-
 # Main Function
 if __name__ == '__main__':
-   
+    twist = Twist()
+    rospy.init_node('emiller-lab2')
     pub = rospy.Publisher("/mobile_base/commands/velocity", Twist) # Publisher for commanding robot motion
 
-    rospy.init_node('emiller-lab2')
-    
-    print "Starting Lab 2"
-        
-    # Subscribe to turtlebot
 
-    print "Lab 2 complete!"
+    
+ 
+   
+    
+
+
+
+
