@@ -10,12 +10,14 @@ import math
 
 # Imports for each of the message types used
 from kobuki_msgs.msg import BumperEvent
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Pose
 from nav_msgs.msg import Odometry
+from tf.transformations import euler_from_quaternion
 
 ################## GLOBALS ##################
 global pub
 global pose
+pose = Pose()
 global odom_tf
 global odom_list
 
@@ -38,11 +40,8 @@ def spinWheels(u1, u2, time):
    
    #run at 10hz
    r = rospy.Rate(10)
-  
-   # Publisher for commanding robot motion
-   pub = rospy.Publisher("/cmd_vel_mux/input/teleop", Twist)
 
-   i = 0 # init counter
+   i = 0.0 # init counter
    while i < time: # run wheels until set time is reached
    
     # create a Twist message
@@ -60,11 +59,11 @@ def spinWheels(u1, u2, time):
     # publish the twist
     pub.publish(twist)
     
-    # sleep for 1 second
-    rospy.sleep(1)
+    # sleep for 0.2 second
+    rospy.sleep(0.2)
     
     # count each iteration
-    i = i + 1
+    i = i + 0.2
 
 # Use this object to get the robot's Odometry
     odom_list = tf.TransformListener()
@@ -78,21 +77,27 @@ def spinWheels(u1, u2, time):
 # distance - distance (m)	
 # This function accepts a speed and a distance for the robot to move in a straight line
 def driveStraight(speed, distance):
+    global pose
     print "driveStraight"
     # starting config
-    x0 = pose.position.x
-    y0 = pose.position.y
+    x_0 = pose.position.x
+    y_0 = pose.position.y
     
     # x-distance travelled squared
-    xdist = (pose.position.x - x0)**2 
+    xdist = (pose.position.x - x_0)**2 
     # y-distance travelled squared
-    ydist = (pose.position.y - y0)**2
+    ydist = (pose.position.y - y_0)**2
     
     #run at 10hz
     r = rospy.Rate(10)
      
     # keep driving until given distance is reached
-    while xdist + ydist < distance**2:
+    while xdist + ydist < distance**2 and not rospy.is_shutdown():
+        
+        # update pose reading
+        x_0 = pose.position.x
+        y_0 = pose.position.y
+        
         # create a Twist message
         twist = Twist() 
         
@@ -109,8 +114,25 @@ def driveStraight(speed, distance):
         # publish the twist
         pub.publish(twist)
     
-        # sleep for 1 second
-        rospy.sleep(1)
+        # sleep for 0.2 second
+        rospy.sleep(0.2)
+        
+
+def quatmsg_euler():
+    global pose
+    print pose
+    quaternion = (
+        pose.orientation.x,
+        pose.orientation.y,
+        pose.orientation.z,
+        pose.orientation.w)
+    
+    euler = tf.transformations.euler_from_quaternion(quaternion)
+    roll = euler[0]
+    pitch = euler[1]
+    yaw = euler[2]
+    
+    return yaw       
     
 # rotate:
 # parameters
@@ -118,7 +140,42 @@ def driveStraight(speed, distance):
 # Accepts an angle and makes the robot rotate around it.
 def rotate(angle):
     print "rotate"
-    pass
+    angle = math.radians(angle) # convert from deg to rad
+
+    #run at 10hz
+    r = rospy.Rate(10)
+    
+    #define start angle
+    ang_0 = quatmsg_euler()
+    des_ang = ang_0 + angle
+    print des_ang
+    curr_ang = ang_0
+     
+    while curr_ang < des_ang and not rospy.is_shutdown():
+        
+        curr_ang = quatmsg_euler() # update current angle each iteration
+        print curr_ang
+        
+        # create a Twist message
+        twist = Twist() 
+        
+        # translation component
+        twist.linear.x = 0
+        twist.linear.y = 0
+        twist.linear.z = 0
+   
+        # rotation component
+        twist.angular.x = 0
+        twist.angular.y = 0
+        twist.angular.z = 0.2
+        
+        # publish the twist
+        pub.publish(twist)
+    
+        # sleep for 0.2 second
+        rospy.sleep(0.2)
+        
+    pub.publish(Twist()) # stop moving when angle is reached
     
 # driveArc:
 # parameters
@@ -133,7 +190,8 @@ def driveArc(radius, speed, angle):
 
 #Odometry Callback function.
 def read_odometry(msg):
-	pass
+	global pose
+	pose = msg.pose.pose
      
 #Bumper Event Callback function
 def readBumper(msg):
@@ -147,11 +205,22 @@ def timerCallback(event):
 
 # Main Function
 if __name__ == '__main__':
+    global pub
     rospy.init_node('emiller_lab2')
-    spinWheels(3,3,15)
+    sub = rospy.Subscriber("odom",Odometry,read_odometry)
+    
+    # Publisher for commanding robot motion
+    pub = rospy.Publisher("/cmd_vel_mux/input/teleop", Twist)
+    
+    #spinWheels(4,-4,5)
+    driveStraight(0.5,.5)
+    
+    #rotate(90)
+    
     # sleep for 1 second
     rospy.sleep(1)
-
+    
+    
 
     
  
