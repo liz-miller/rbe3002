@@ -1,0 +1,9 @@
+Lab 2 Findings
+Liz Miller
+11.11.14
+
+I. Odometry of the Robot
+
+II. Explaination of each Function
+
+III. Conclusion and Improvements
