@@ -1,3 +1,15 @@
-https://code.google.com/p/rosbee/wiki/Turtlebot
+References.txt
+Liz Miller
+11.11.14
+
+The following sites were used to write the code for Lab 2:
+
+https://code.google.com/p/rosbee/wiki/Turtlebot 
+Tutorials for connecting to the Turtlebot (moreso used for terminal commands)
+
 http://wiki.ros.org/navigation/Tutorials/RobotSetup/Odom
-https://raw.githubusercontent.com/cwgeary/rbe3002-d14-teamZTC/master/zdlovett_lab2/src/lab2.py
+Tutorial for setting up Odometry
+
+http://answers.ros.org/question/69754/quaternion-transformations-in-python/ 
+I used this person's logic for translating the quaternion message into an euler angle message. 
+See the comment in the read_odometry(msg) function for specific use of the code found on this website.
