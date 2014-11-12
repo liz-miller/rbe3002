@@ -2,8 +2,6 @@ Lab 2 Findings
 Liz Miller
 11.11.14
 
-I. Odometry of the Robot
+Odometry of the Robot
+This lab taught me about sending and publishing messages to the turtlebot and creating my own package. My software successfully ran in both simulation and on the actual turtlebot (each function explained further, below). The turtlebot uses sensory feedback along with the programmed differential drive-modeled kinematics. When testing, I noticed that the simulated software worked well with different function input values for speed. Gazebo doesn't take into consideration resistances such as friction between the wheels and floor nor the need for adjustments. I did find that I had to adjust to lower values when running on the actual turtlebot to better suit the real-life state space. Overall, I like the compatibility of writing software for simulation testing, and then being able to transfer the same software onto the actual turtlebot for further real-time testing and debugging.
 
-II. Explaination of each Function
-
-III. Conclusion and Improvements
