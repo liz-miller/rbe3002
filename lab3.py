@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 # Liz Miller
-# 11.10.14
-# lab2.py
+# 11.15.14
+# lab3.py
 
 # ROS python declaration
 import rospy, tf
